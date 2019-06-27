@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <!-- <router-link to="/header">跳转到header</router-link>
+    <!-- <router-link to="/header">跳转到header</router-link>111
     -->
     <div class="header">
       <v-header :seller="seller"></v-header>
