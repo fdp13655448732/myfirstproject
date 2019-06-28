@@ -20,7 +20,7 @@ assetsDir:'assets',//静态资源目录?(js,css,img,fonts)
 lintOnSave:false,//是否开启eslit保存检测，有效值fals || true 检测语法的严格性
 devServer: {  //开发配置 
     open:true,//是否自动打开项目  false || true
-    host:'localhost',//指定域名
+    host:'0.0.0.0',//指定域名
     port:8081,//端口号
     https:false,// 把访问域名变成 https  两个条件 false || true
     hotOnly: false,//热更新

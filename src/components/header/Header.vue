@@ -7,9 +7,9 @@
       </div>
       <div class="content">
         <div v-if="seller.supports" class="support-count">
-          <span class="count">({{seller.supports.length}}个)</span>
-          <i class="mintui mintui-back"></i>
+          <span class="count">{{seller.supports.length}}个</span>
 
+          <i class="iconfont icon-right"></i>
         </div>
         <div class="title">
           <span class="brand"></span>
@@ -24,7 +24,16 @@
     </div>
 
     <!--公告-->
-    <div class="bulletin-wrapper"></div>
+    <div class="bulletin-wrapper">
+      <span class=bulletin-title></span>
+      <span class="bulletin-text">{{seller.bulletin}}</span>
+       <span class="icon-rightGg"><i class="iconfont icon-right"></i></span>
+    </div>
+
+    <div class="top-background">
+      <img :src="seller.avatar" alt="" width="100%" height="100%">
+
+    </div>
   </div>
 </template>
 
@@ -54,12 +63,16 @@ export default {
   methods: {}
 };
 </script>
+
 <style lang='scss' scoped>
+
 .header {
+  position: relative;
   color: #fff;
-  background-color: rgba(15, 15, 15, 0.6);
+  background-color: rgba(7, 17, 27, 0.5);
   font-size: 0;
   .content-wrapper {
+    position: relative;
     padding: 48px 24px 36px 48px;
     .avatar {
       display: inline-block;
@@ -72,6 +85,23 @@ export default {
       margin-left: 32px;
       display: inline-block;
       font-size: 24px;
+
+    .support-count {
+     position: absolute;
+     right: 24px;
+     bottom:36px;
+     padding: 0 16px;
+     height: 48px;
+     line-height: 48px;
+     font-size: 20px;
+     background-color: rgba(7,17,27,0.2);
+     border-radius: 28px;
+     text-align: center;
+     .count {
+       padding-right: 8px;
+      }
+    }
+
     }
 
     .title {
@@ -132,6 +162,43 @@ export default {
         line-height: 24px;
       }
     }
+  }
+  .bulletin-wrapper {
+    background-color: rgba(7,17,27,0.2);
+    position: relative;
+     vertical-align: top;
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 56px;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 24px 0 24px;
+    text-overflow: ellipsis;
+    .bulletin-title {
+      vertical-align: top;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+      background-image: url('bulletin@2x.png');
+      margin-right: 8px;
+      margin-top: 15px;
+    }
+    .icon-rightGg {
+      position:absolute;
+      font-size: 20px;
+      right:12px;
+    }
+  }
+  .top-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter:blur(10px)
+
   }
 }
 </style>
