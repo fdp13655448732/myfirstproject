@@ -17,5 +17,8 @@ import 'mint-ui/lib/style.css';
 
 new Vue({
   render: h => h(App),
+  data:{
+    
+  },
   router
 }).$mount('#app')

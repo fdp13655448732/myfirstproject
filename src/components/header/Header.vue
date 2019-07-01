@@ -37,26 +37,44 @@
     <div v-show="detailShowFlag" class="detail">
       <div class="detail-wrapper clearfix">
         <div class="detail-main">
-           <h1 class="name">{{seller.name}}</h1>
-           <div class="star"><v-star size=48 :score="seller.score"></v-star></div>
-           <div class="title">
-<div class="line"></div>
-<div class="text">优惠信息</div>
-<div class="line"></div>
-            
-           </div>
+          <h1 class="name">{{seller.name}}</h1>
+          <div class="star">
+            <v-star size="48" :score="seller.score"></v-star>
+          </div>
+          <div class="title">
+            <div class="line"></div>
+            <div class="text">优惠信息</div>
+            <div class="line"></div>
+          </div>
+          <!--遍历浮层列表-->
+          <ul v-if="seller.supports" class="supports">
+            <li class="support-item" :key="index" v-for="(item,index) in seller.supports">
+              <span class="icon" :class="classMap[item.type]"></span>
+              <span class="text">{{item.description}}</span>
+            </li>
+          </ul>
+
+                   <!-- <div class="title">
+            <div class="line"></div>
+            <div class="text">商家公告</div>
+            <div class="line"></div>
+          </div>
+          <div class="bulletin">
+            <p class="content">{{seller.bulletin}}</p>
+          </div> -->
+
         </div>
       </div>
-<!--关闭按钮图片-->
-      <div class="detail-close" >
-        <i class="iconfont icon-guanbi" @click="closeDetailShow" ></i>
+      <!--关闭按钮图片-->
+      <div class="detail-close">
+        <i class="iconfont icon-guanbi" @click="closeDetailShow"></i>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Star from '../star/Star.vue'
+import Star from "../star/Star.vue";
 export default {
   data() {
     return {
@@ -74,7 +92,7 @@ export default {
   },
 
   components: {
-    "v-star":Star
+    "v-star": Star
   },
 
   computed: {},
@@ -253,14 +271,14 @@ export default {
       min-height: 100%;
       width: 100%;
       .detail-main {
-        
+
         margin-top: 64px;
         padding-bottom: 64px;
         .name {
-         font-size: 32px;
-         line-height: 32px;
-         font-weight: 700px;
-         text-align: center;
+          font-size: 32px;
+          line-height: 32px;
+          font-weight: 700px;
+          text-align: center;
         }
         .star {
           font-size: 24px;
@@ -271,23 +289,72 @@ export default {
         .title {
           display: flex;
           width: 80%;
-        
+
           font-weight: 700px;
           line-height: 28px;
           margin: 30px auto 24px auto;
-          .line{
+          .line {
             flex: 1;
             position: relative;
             top: -6px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
           }
-          .text
-          {
-            padding: 0 24px;
+          .text {
+            padding: 0 48px;
             font-size: 28px;
+          }
+        }
+        .supports {
+          width: 80%;
+          margin: 0 auto;
+
+          font-size: 24px;
+          .support-item {
+            padding: 0 24px;
+            margin-bottom: 12px;
+            font-size: 0;
+            &:last-child {
+              margin-bottom: 0;
+            }
+            .icon {
+              display:inline-block;
+              width: 32px;
+              height: 32px;
+              vertical-align: top;
+              margin-right:12px;
+              background-color: 32px;
+              background-repeat: no-repeat;
+                          &.decrease {
+              background-image: url("./decrease_2@2x.png");
+            }
+            &.discount {
+              background-image: url("./discount_2@2x.png");
+            }
+            &.special {
+              background-image: url("./special_2@2x.png");
+            }
+            &.invoice {
+              background-image: url("./invoice_2@2x.png");
+            }
+            &.guarantee {
+              background-image: url("./guarantee_2@2x.png");
+            }
+             }
+             .text {
+               font-size: 24px;
+             }
 
           }
+        }
+        .bulletin {
+          width: 80%;
+          margin: 0 auto;
+           .content {
+             padding: 0 24px;
+             line-height: 48px;
+             font-size: 24px;
 
+           }
         }
       }
     }
