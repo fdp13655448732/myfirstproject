@@ -6,9 +6,9 @@
         <img width="128" height="128" :src="seller.avatar" alt>
       </div>
       <div class="content">
-        <div v-if="seller.supports" class="support-count" @click="detailShow">
+        <div v-if="seller.supports" class="support-count" >
           <span class="count">{{seller.supports.length}}个</span>
-          <i class="iconfont icon-right"></i>
+          <i class="iconfont icon-right" @click = "detailShow"></i>
         </div>
         <div class="title">
           <span class="brand"></span>
@@ -23,18 +23,20 @@
     </div>
 
     <!--公告-->
-    <div class="bulletin-wrapper" @click="detailShow">
+    <div class="bulletin-wrapper" >
       <span class="bulletin-title"></span>
       <span class="bulletin-text">{{seller.bulletin}}</span>
       <span class="icon-rightGg">
-        <i class="iconfont icon-right"></i>
+        <i class="iconfont icon-right" @click="detailShow"></i>
       </span>
     </div>
 
     <div class="top-background">
       <img :src="seller.avatar" alt width="100%" height="100%">
     </div>
-    <div v-show="detailShowFlag" class="detail">
+    <transition name="fade">
+    <div v-show="detailShowFlag" class="detail" >
+  
       <div class="detail-wrapper clearfix">
         <div class="detail-main">
           <h1 class="name">{{seller.name}}</h1>
@@ -54,15 +56,14 @@
             </li>
           </ul>
 
-                   <!-- <div class="title">
+          <div class="title">
             <div class="line"></div>
             <div class="text">商家公告</div>
             <div class="line"></div>
           </div>
           <div class="bulletin">
             <p class="content">{{seller.bulletin}}</p>
-          </div> -->
-
+          </div>
         </div>
       </div>
       <!--关闭按钮图片-->
@@ -70,6 +71,7 @@
         <i class="iconfont icon-guanbi" @click="closeDetailShow"></i>
       </div>
     </div>
+    </transition>
   </div>
 </template>
 
@@ -112,6 +114,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+*{margin:0;padding:0}
 .clearfix {
   display: inline-block;
   &:after {
@@ -129,7 +132,7 @@ export default {
   overflow: hidden;
   color: #fff;
   background-color: rgba(7, 17, 27, 0.5);
-  font-size: 0;
+
   .content-wrapper {
     position: relative;
     padding: 48px 24px 36px 48px;
@@ -265,13 +268,12 @@ export default {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(7, 17, 27, 0.8);
+    background-color:  rgba(7, 17, 27, 0.8);
 
     .detail-wrapper {
       min-height: 100%;
       width: 100%;
       .detail-main {
-
         margin-top: 64px;
         padding-bottom: 64px;
         .name {
@@ -317,44 +319,41 @@ export default {
               margin-bottom: 0;
             }
             .icon {
-              display:inline-block;
+              display: inline-block;
               width: 32px;
               height: 32px;
               vertical-align: top;
-              margin-right:12px;
+              margin-right: 12px;
               background-color: 32px;
               background-repeat: no-repeat;
-                          &.decrease {
-              background-image: url("./decrease_2@2x.png");
+              &.decrease {
+                background-image: url("./decrease_2@2x.png");
+              }
+              &.discount {
+                background-image: url("./discount_2@2x.png");
+              }
+              &.special {
+                background-image: url("./special_2@2x.png");
+              }
+              &.invoice {
+                background-image: url("./invoice_2@2x.png");
+              }
+              &.guarantee {
+                background-image: url("./guarantee_2@2x.png");
+              }
             }
-            &.discount {
-              background-image: url("./discount_2@2x.png");
+            .text {
+              font-size: 24px;
             }
-            &.special {
-              background-image: url("./special_2@2x.png");
-            }
-            &.invoice {
-              background-image: url("./invoice_2@2x.png");
-            }
-            &.guarantee {
-              background-image: url("./guarantee_2@2x.png");
-            }
-             }
-             .text {
-               font-size: 24px;
-             }
-
           }
         }
         .bulletin {
           width: 80%;
           margin: 0 auto;
-           .content {
-             padding: 0 24px;
-             line-height: 48px;
-             font-size: 24px;
-
-           }
+          .content {
+            padding: 0 24px;
+            font-size: 24px;
+          }
         }
       }
     }
@@ -371,4 +370,13 @@ export default {
     }
   }
 }
+.fade-enter,.fade-leave-to{
+            opacity: 0;
+        }
+.fade-enter-to,.fade-leave{
+            opacity: 0.8;
+        }
+.fade-enter-active,.fade-leave-active{
+            transition: all 1s;
+        }
 </style>

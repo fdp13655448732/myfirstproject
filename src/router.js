@@ -14,7 +14,8 @@ const routes = [
     { path: '/header', component: Header },
     { path: '/goods', component: Goods },
     { path: '/seller', component: Seller },
-    { path: '/ratings', component: Ratings }
+    { path: '/ratings', component: Ratings },
+    { path: '/', redirect: '/goods' }
   ];
   const router = new VueRouter({
     linkActiveClass: 'active',

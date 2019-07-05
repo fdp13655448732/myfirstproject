@@ -18,8 +18,7 @@
       </div>
     </div>
     <div class="content">
-      
-      <router-view></router-view>
+      <router-view  :seller="seller"></router-view>
     </div>
   </div>
 </template>
@@ -27,6 +26,7 @@
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import Header from "./components/header/Header.vue";
+import Goods from "./components/goods/Goods.vue";
 const ERR_OK = 200;
 export default {
   name: "app",
@@ -36,7 +36,8 @@ export default {
     }
   },
   components: {
-    "v-header": Header
+    "v-header": Header,
+     "v-goods": Goods
   },
   //   mounted(){
 
@@ -62,6 +63,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+*{margin:0;padding:0}
 //弹性布局
 .tab {
   display: flex;
