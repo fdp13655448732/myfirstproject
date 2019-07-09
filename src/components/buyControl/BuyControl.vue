@@ -1,9 +1,14 @@
 <!-- 复用的按钮组件 -->
 <template>
   <div class="buyControl">
-    <div class="buy-decrease" v-show="food.count>0">
-      <i class="iconfont icon-jian" @click="decrease"></i>
-    </div>
+    <transition name="move">
+      <div class="buy-decrease" v-show="food.count>0">
+        <span class="inner">
+          <i class="iconfont icon-jian" @click="decrease"></i>
+        </span>
+        <span></span>
+      </div>
+    </transition>
     <div class="buy-count" v-show="food.count>0">{{food.count}}</div>
     <div class="buy-add">
       <i class="iconfont icon-jia" @click="add"></i>
@@ -20,7 +25,7 @@ import Vue from "vue";
 export default {
   props: {
     food: {
-      type: Object
+      type: Object,
     }
   },
   //import引入的组件需要注入到对象中才能使用
@@ -46,6 +51,9 @@ export default {
       } else {
         this.food.count++;
       }
+
+      var el_target = event.currentTarget;
+      this.$emit("drop", el_target);
     },
     //减
     decrease(event) {
@@ -82,6 +90,7 @@ export default {
   .buy-decrease {
     display: inline-block;
     padding: 12px;
+    transition: all 0.4s linear;
     .icon-jian {
       font-size: 48px;
       line-height: 48px;
@@ -92,8 +101,8 @@ export default {
     display: inline-block;
     text-align: center;
     font-size: 24px;
-    line-height: 24px;
-    padding:0 16px 0 6px;
+    line-height: 48px;
+    padding: 0 16px 0 6px;
     width: 12px;
   }
   .buy-add {
@@ -105,4 +114,17 @@ export default {
     }
   }
 }
+//动画
+.move-enter,
+.move-leave-to {
+  //滑动和滚动同时的动画
+  transform: translate3d(0, 0, 0) rotate(0);
+  opacity: 0;
+}
+.move-enter-active,
+.move-leave-active {
+  transition: opacity 2s;
+  transform: translate3d(24px, 0, 0) rotate(180deg);
+}
+
 </style>

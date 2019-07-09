@@ -3,7 +3,13 @@
   <div class="goods">
     <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-        <li :key="index" v-for="(item,index) in goods" class="menu-item" :class = "{'current':currentIndex===index}" @click="selectMenu(index,$event)">
+        <li
+          :key="index"
+          v-for="(item,index) in goods"
+          class="menu-item"
+          :class="{'current':currentIndex===index}"
+          @click="selectMenu(index,$event)"
+        >
           <span class="text">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
             {{item.name}}
@@ -25,14 +31,14 @@
                 <p class="desc">{{food.description}}</p>
                 <div class="extra">
                   <span class="count">月售{{food.sellCount}}份</span>
-                  <span> 好评率{{food.rating}}%</span>
+                  <span>好评率{{food.rating}}%</span>
                 </div>
                 <div class="price">
                   <span class="now">￥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
                 <div class="buyControl-wrapper">
-                <v-buyControl :food="food" ></v-buyControl>
+                  <v-buyControl :food="food"  @drop="drop"></v-buyControl>
                 </div>
               </div>
             </li>
@@ -41,36 +47,74 @@
       </ul>
     </div>
     <!--配送费 起送费-->
-    <div class="shopCar"><v-shopCar :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></v-shopCar></div>
-  </div> 
+    <div class="shopCar">
+      <v-shopCar
+        :selectFoods="selectFoods"
+        :delivery-price="seller.deliveryPrice"
+        :min-price="seller.minPrice"
+      ></v-shopCar>
+    </div>
+    <!-- 加入购入车按钮的小球动画实现 -->
+    <div class="ball-container">
+      <transition
+        v-on:after-enter="afterEnter"
+        v-on:enter="enter"
+        v-on:before-enter="beforeEnter"
+        name="drop"
+        v-for="(litterBall,indexBall) in balls"
+        :key="indexBall"
+      >
+        <div v-show="litterBall.show" class="ball">
+          <div class="inner" :class="indexBall"></div>
+        </div>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <script>
 //引入better-scroll插件
+import Velocity from "velocity-animate";
 import BScroll from "better-scroll";
-import ShopCar from '../shopCar/ShopCar.vue';
+import ShopCar from "../shopCar/ShopCar.vue";
 //引入按钮组件
-import BuyControl from '../buyControl/BuyControl.vue';
+import BuyControl from "../buyControl/BuyControl.vue";
 const ERR_OK = 200;
 export default {
   props: {
-    seller:{
-      type: Object 
+    seller: {
+      type: Object
     }
   },
   data() {
     return {
-      goods: {},
+      goods: [],
       menuScroll: {},
       foodScroll: {},
       listHeight: [],
       scrollY: 0,
+      balls: [
+        //小球
+        { show: false, index: 0 },
+        { show: false, index: 1 },
+        { show: false, index: 2 },
+        { show: false, index: 3 },
+        { show: false, index: 4 },
+        { show: false, index: 5 },
+        { show: false, index: 6 },
+        { show: false, index: 7 },
+        { show: false, index: 8 },
+        { show: false, index: 9 },
+        { show: false, index: 10 },
+        { show: false, index: 11 }
+      ],
+      dropBall: []
     };
   },
 
   components: {
-    "v-shopCar":ShopCar,
-    "v-buyControl":BuyControl
+    "v-shopCar": ShopCar,
+    "v-buyControl": BuyControl
   },
 
   //mounted: {},
@@ -89,7 +133,7 @@ export default {
             this.calculateHeight();
           });
 
-          console.log(response.data);
+          //console.log(response.data);
         }
       },
       error => {
@@ -97,36 +141,51 @@ export default {
       }
     );
   },
-      //计算属性
-    computed: {
-      //左侧当前索引应该在哪
-      currentIndex() {
-        for (let index = 0; index < this.listHeight.length; index++) {
-          const height1 = this.listHeight[index];
-          const height2 = this.listHeight[index + 1];
-          //最后一个会超出数组长度这里判断一下  或者在这个区间内我们就返回 这个区间的索引
-          if (!height2||(this.scrollY >= height1 && this.scrollY < height2)) {
-            return index;
-          }
+  //计算属性
+  computed: {
+    //左侧当前索引应该在哪
+    currentIndex() {
+      for (let index = 0; index < this.listHeight.length; index++) {
+        const height1 = this.listHeight[index];
+        const height2 = this.listHeight[index + 1];
+        //最后一个会超出数组长度这里判断一下  或者在这个区间内我们就返回 这个区间的索引
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+          return index;
         }
-        return 0;
       }
+      return 0;
     },
+    //选中的食品
+    selectFoods() {
+      let foods = [];
+      this.goods.forEach(good => {
+        good.foods.forEach(food => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
+    }
+  },
 
   methods: {
-     //dom更新
+    //dom更新
     initScroll() {
       this.menuScroll = new BScroll(this.$refs.menuWrapper, {
         click: true
       });
-      this.foodScroll = new BScroll(this.$refs.foodsWrapper, { probeType: 3,click: true});
+      this.foodScroll = new BScroll(this.$refs.foodsWrapper, {
+        probeType: 3,
+        click: true
+      });
 
       //probeType: 3 希望scroll在滚动的时实时监听滚动位置
       this.foodScroll.on("scroll", pos => {
         this.scrollY = Math.abs(Math.round(pos.y)); //转正值 小数转整数
       });
     },
-     //计算右侧食品高度
+    //计算右侧食品高度
     calculateHeight() {
       const foodList = this.$refs.foodsWrapper.getElementsByClassName(
         "food-list-hook"
@@ -139,23 +198,99 @@ export default {
         this.listHeight.push(height);
       }
     },
-       selectMenu(index,event) {
-         
-    //原生的点击事件和触发的这个点击有区别   不然电脑端会打印俩次监听的内容 
-    if(!event._constructed){
-      return;
-    }
+    selectMenu(index, event) {
+      //原生的点击事件和触发的这个点击有区别   不然电脑端会打印俩次监听的内容
+      if (!event._constructed) {
+        return;
+      }
       const foodList = this.$refs.foodsWrapper.getElementsByClassName(
         "food-list-hook"
       );
-      console.log(foodList)
-      let el=foodList[index];
-      this.foodScroll.scrollToElement(el,300);
+      //console.log(foodList);
+      let el = foodList[index];
+      this.foodScroll.scrollToElement(el, 300);
+    },
+    drop(el) {
+      //小球动画方法,el就是加号按钮元素
+      for (var i = 0; i < this.balls.length; i++) {
+        if (!this.balls[i].show) {
+          //把小球show为false的变成true，展示出来
+          let ball = this.balls[i];
+          ball.show = true; //这里这样写他继承的this.balls的值也会变成true
+         
+          ball.el = el; //把这个球的位置保留下来
+         
+          this.dropBall.push(ball); //把这个已经drop的球放到dropBall中
+           console.log(this.dropBall);
+          //console.log(this.dropBall,222)
+          return; //结束循环和函数，不会让循环再往后执行了
+        }
+      }
+    },
+    beforeEnter(els) {
+      let nn = this.dropBall;
+      let count = this.dropBall.length - 1;
+      nn.forEach(el => {
+        //console.log(el)
+      });
+      //while(count--){
+      //let ball = this.balls[count];
+      let ball = this.dropBall[count];
+      //if(ball.show){//ball.el就是前面把点击的元素绑在了ball.el属性上
+      let rect = ball.el.getBoundingClientRect(); //getBoundingClientRect()可以获取到元素对象和窗口的相对上下左右的距离
+      var rect2 = els.getBoundingClientRect();
+      let x = rect.left - 18; //点击元素的左边距离 - 下面购物车左边的距离，就是小球要运动的X轴距离
+      let y = -(window.innerHeight - rect.top - 32); //窗口的高度 - 点击元素离窗口的高度 - 购物车底部的padding,margin高度，就是小球要运动的y轴距离，且是向下运动，所以是负值
+      //els.style.display ="";
+      els.style.opacity = 1;
+      els.style.webkitTransform = `translate3d(0,${y}px,0)`;
+      els.style.transform = `translate3d(0,${y}px,0)`; //外层做纵轴运动
+      //内层做横轴运动
+      let inner = els.getElementsByClassName("inner")[0];
+      inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+      inner.style.transform = `translate3d(${x}px,0,0)`;
+      //}
+      //}
+    },
+    enter(els, done) {
+      var _this = this;
+      let hh = els.offsetHeight; //手动获取这个值，触发浏览器重绘
+      _this.$nextTick(function() {
+        //els.style.webkitTransform = 'translate3d(0,0,0)';
+        //els.style.transform = 'translate3d(0,0,0)'; //外层做纵轴运动
+        //内层做横轴运动
+        els.style.opacity = "0";
+        let inner = els.getElementsByClassName("inner")[0];
+        //inner.style.webkitTransform = 'translate3d(0,0,0)';
+        //inner.style.transform = 'translate3d(0,0,0)';
+        Velocity(els, { transform: "translate3d(0,0,0)" }, { duration: 600 });
+        Velocity(
+          inner,
+          { transform: "translate3d(0,0,0)" },
+          {
+            duration: 600,
+            complete: function() {
+              done();
+            }
+          }
+        );
+      });
+    },
+    afterEnter(els) {
+      let ball = this.dropBall.shift();
+      if (ball) {
+        ball.show = false;
+        els.style.display = "none"; //这个很重要
+      }
+      //els.style.opacity = 0;
+    }
   },
- 
-  },
-
-
+  transition: {
+    //定义全局的transition的钩子函数
+    drop: {
+      //这里的drop是在标签中写的transition的name
+    }
+  }
 };
 </script>
 <style lang='scss' scoped>
@@ -171,7 +306,6 @@ export default {
   bottom: 92px;
   overflow: hidden;
   .menu-wrapper {
-  
     flex: 0 0 160px;
     width: 160px;
     background: #f3f5f7;
@@ -185,7 +319,7 @@ export default {
         font-size: 22px;
         display: table-cell;
         vertical-align: middle;
-       text-align: center;
+        text-align: center;
       }
       .icon {
         vertical-align: top;
@@ -212,13 +346,11 @@ export default {
       }
     }
     .current {
-      position: relative
-      margin-top： -1px;
+      position: relative margin-top： -1px;
       z-index: 10;
-      background:#fff;
+      background: #fff;
       font-weight: 700;
       width: 100%;
-  
     }
   }
   .foods-wrapper {
@@ -290,11 +422,31 @@ export default {
           .buyControl-wrapper {
             position: absolute;
             right: 36px;
-            margin-top: -36px
+            margin-top: -36px;
           }
         }
       }
     }
+  }
+}
+
+.ball-container {
+  .ball {
+    position: fixed;
+    left: 32px;
+    bottom: 22px;
+    z-index: 900;
+    transform: translate3d(0, 0, 0);
+    transition: all 0.6s cubic-bezier(0.49, -0.29, 0.75, 0.41);
+  }
+
+  .inner {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    background: rgb(0, 160, 220);
+    transition: all 0.6s linear;
+    transform: translate3d(0, 0, 0);
   }
 }
 </style>
