@@ -4,14 +4,14 @@
     <transition name="move">
       <div class="buy-decrease" v-show="food.count>0">
         <span class="inner">
-          <i class="iconfont icon-jian" @click="decrease"></i>
+          <i class="iconfont icon-jian" @click.stop.prevent="decrease"></i>
         </span>
         <span></span>
       </div>
     </transition>
     <div class="buy-count" v-show="food.count>0">{{food.count}}</div>
     <div class="buy-add">
-      <i class="iconfont icon-jia" @click="add"></i>
+      <i class="iconfont icon-jia" @click.stop.prevent="add"></i>
     </div>
   </div>
 </template>

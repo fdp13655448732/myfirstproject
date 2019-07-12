@@ -22,7 +22,12 @@
         <li :key="index" v-for="(item,index) in goods" class="food-list food-list-hook">
           <h1 class="title">{{item.name}}</h1>
           <ul>
-            <li :key="index2" v-for="(food,index2) in item.foods" class="food-item">
+            <li
+              @click.stop.prevent="selectFood(food,$event)"
+              :key="index2"
+              v-for="(food,index2) in item.foods"
+              class="food-item"
+            >
               <div class="icon">
                 <img width="114" height="114" :src="food.icon">
               </div>
@@ -38,7 +43,7 @@
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
                 <div class="buyControl-wrapper">
-                  <v-buyControl :food="food"  @drop="drop"></v-buyControl>
+                  <v-buyControl :food="food" @drop="drop"></v-buyControl>
                 </div>
               </div>
             </li>
@@ -69,8 +74,14 @@
         </div>
       </transition>
     </div>
+
+    <!--单个商品的详细-->
+ 
+    <v-food :food="selectedFood" ref="vFood" ></v-food>
+
+    
   </div>
-</template>
+</template>  
 
 <script>
 //引入better-scroll插件
@@ -79,6 +90,8 @@ import BScroll from "better-scroll";
 import ShopCar from "../shopCar/ShopCar.vue";
 //引入按钮组件
 import BuyControl from "../buyControl/BuyControl.vue";
+//引入单个商品的详情
+import Food from "../food/Food.vue";
 const ERR_OK = 200;
 export default {
   props: {
@@ -108,13 +121,15 @@ export default {
         { show: false, index: 10 },
         { show: false, index: 11 }
       ],
-      dropBall: []
+      dropBall: [],
+      selectedFood: {}
     };
   },
 
   components: {
     "v-shopCar": ShopCar,
-    "v-buyControl": BuyControl
+    "v-buyControl": BuyControl,
+    "v-food": Food
   },
 
   //mounted: {},
@@ -217,11 +232,11 @@ export default {
           //把小球show为false的变成true，展示出来
           let ball = this.balls[i];
           ball.show = true; //这里这样写他继承的this.balls的值也会变成true
-         
+
           ball.el = el; //把这个球的位置保留下来
-         
+
           this.dropBall.push(ball); //把这个已经drop的球放到dropBall中
-           console.log(this.dropBall);
+          console.log(this.dropBall);
           //console.log(this.dropBall,222)
           return; //结束循环和函数，不会让循环再往后执行了
         }
@@ -283,6 +298,15 @@ export default {
         els.style.display = "none"; //这个很重要
       }
       //els.style.opacity = 0;
+    },
+    //点击的哪个商品
+    selectFood(food, event) {
+      if (!event._constructed) {
+        return;
+      } else {
+        this.selectedFood = food;
+        this.$refs.vFood.show();
+      }
     }
   },
   transition: {
